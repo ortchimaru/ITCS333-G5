@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus News</title>
+    <link href="https://unpkg.com/pico-css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8; /* Light background color */
+        }
+        header {
+            background-color: #1e0785; /* Blue color for the header */
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .news-item {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .news-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            
+        }
+        #news-form {
+            display: none; /* Hide the form by default */
+            background-color: #e9ecef; /* Background color for the form */
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        button.primary {
+            background-color: #17351e; /* Green for the main button */
+            color: white;
+            text-align: center;
+        }
+        button.success {
+            background-color: #17a2b8; /* Light blue for submit button */
+            color: white;
+        }
+        button.warning {
+            background-color: #129654; /* Yellow for edit button */
+            color: black;
+        }
+        button.danger {
+            background-color: #dc3545; /* Red for delete button */
+            color: white;
+        }
+        button.secondary {
+            background-color: #6c757d; /* Gray for cancel button */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="container">
+        <h1 class="text-center">Campus News</h1>
+    </header>
+    <main class="container mt-4">
+        <button class="primary" id="add-item">Add New Item</button>
+        <div class="grid" id="news-list"></div>
+
+        <form class="mt-4" id="news-form">
+            <label for="news-title">Title:</label>
+            <input type="text" id="news-title" placeholder="Enter news title" required>
+            <label for="news-content">Content:</label>
+            <textarea id="news-content" placeholder="Enter news content" required></textarea>
+            <label for="news-image">Image URL:</label>
+            <input type="text" id="news-image" placeholder="Enter image URL">
+            <button type="submit" class="success">Submit</button>
+            <button type="button" class="secondary" id="cancel-button">Cancel</button>
+        </form>
+    </main>
+
+    <script>
+        const newsList = document.getElementById('news-list');
+        const newsForm = document.getElementById('news-form');
+        const newsTitleInput = document.getElementById('news-title');
+        const newsContentInput = document.getElementById('news-content');
+        const newsImageInput = document.getElementById('news-image');
+
+        let editingIndex = -1;
+
+        document.getElementById('add-item').addEventListener('click', function() {
+            newsForm.reset();
+            editingIndex = -1;
+            newsForm.style.display = 'block'; // Show the form when the button is clicked
+        });
+
+        newsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = newsTitleInput.value;
+            const content = newsContentInput.value;
+            const image = newsImageInput.value;
+
+            if (editingIndex >= 0) {
+                const newsItem = newsList.children[editingIndex].querySelector('.news-item');
+                newsItem.querySelector('h2').textContent = title;
+                newsItem.querySelector('p').textContent = content;
+                newsItem.querySelector('img').src = image;
+                editingIndex = -1;
+            } else {
+                const newsItemHTML = `
+                    <div class="col">
+                        <div class="news-item">
+                            <img src="${image}" alt="${title}">
+                            <h2>${title}</h2>
+                            <p>${content}</p>
+                            <button class="warning edit-button">Edit</button>
+                            <button class="danger delete-button">Delete</button>
+                        </div>
+                    </div>`;
+                newsList.insertAdjacentHTML('beforeend', newsItemHTML);
+            }
+
+            newsForm.reset();
+            newsForm.style.display = 'none'; // Hide the form after submission
+        });
+
+        newsList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('edit-button')) {
+                const newsItem = e.target.closest('.news-item');
+                newsTitleInput.value = newsItem.querySelector('h2').textContent;
+                newsContentInput.value = newsItem.querySelector('p').textContent;
+                newsImageInput.value = newsItem.querySelector('img').src;
+                editingIndex = Array.from(newsList.children).indexOf(newsItem.parentElement);
+                newsForm.style.display = 'block'; // Show the form for editing
+            }
+
+            if (e.target.classList.contains('delete-button')) {
+                e.target.closest('.col').remove(); // Remove the news item
+            }
+        });
+
+        document.getElementById('cancel-button').addEventListener('click', function() {
+            newsForm.reset();
+            newsForm.style.display = 'none'; // Hide the form on cancel
+        });
+    </script>
+</body>
+</html>
+
