@@ -29,10 +29,8 @@
             height: auto;
             border-radius: 8px;
             margin-bottom: 10px;
-            
         }
         #news-form {
-            display: none; /* Hide the form by default */
             background-color: #e9ecef; /* Background color for the form */
             padding: 20px;
             border-radius: 8px;
@@ -66,8 +64,18 @@
         <h1 class="text-center">Campus News</h1>
     </header>
     <main class="container mt-4">
-        <button class="primary" id="add-item">Add New Item</button>
-        <div class="grid" id="news-list"></div>
+        <button class="primary">Add New Item</button>
+        <div class="grid" id="news-list">
+            <div class="col">
+                <div class="news-item">
+                    <img src="https://via.placeholder.com/300" alt="Sample News">
+                    <h2>Sample News Title</h2>
+                    <p>This is a sample news content. It can be edited or deleted.</p>
+                    <button class="warning">Edit</button>
+                    <button class="danger">Delete</button>
+                </div>
+            </div>
+        </div>
 
         <form class="mt-4" id="news-form">
             <label for="news-title">Title:</label>
@@ -77,76 +85,8 @@
             <label for="news-image">Image URL:</label>
             <input type="text" id="news-image" placeholder="Enter image URL">
             <button type="submit" class="success">Submit</button>
-            <button type="button" class="secondary" id="cancel-button">Cancel</button>
+            <button type="button" class="secondary">Cancel</button>
         </form>
     </main>
-
-    <script>
-        const newsList = document.getElementById('news-list');
-        const newsForm = document.getElementById('news-form');
-        const newsTitleInput = document.getElementById('news-title');
-        const newsContentInput = document.getElementById('news-content');
-        const newsImageInput = document.getElementById('news-image');
-
-        let editingIndex = -1;
-
-        document.getElementById('add-item').addEventListener('click', function() {
-            newsForm.reset();
-            editingIndex = -1;
-            newsForm.style.display = 'block'; // Show the form when the button is clicked
-        });
-
-        newsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const title = newsTitleInput.value;
-            const content = newsContentInput.value;
-            const image = newsImageInput.value;
-
-            if (editingIndex >= 0) {
-                const newsItem = newsList.children[editingIndex].querySelector('.news-item');
-                newsItem.querySelector('h2').textContent = title;
-                newsItem.querySelector('p').textContent = content;
-                newsItem.querySelector('img').src = image;
-                editingIndex = -1;
-            } else {
-                const newsItemHTML = `
-                    <div class="col">
-                        <div class="news-item">
-                            <img src="${image}" alt="${title}">
-                            <h2>${title}</h2>
-                            <p>${content}</p>
-                            <button class="warning edit-button">Edit</button>
-                            <button class="danger delete-button">Delete</button>
-                        </div>
-                    </div>`;
-                newsList.insertAdjacentHTML('beforeend', newsItemHTML);
-            }
-
-            newsForm.reset();
-            newsForm.style.display = 'none'; // Hide the form after submission
-        });
-
-        newsList.addEventListener('click', function(e) {
-            if (e.target.classList.contains('edit-button')) {
-                const newsItem = e.target.closest('.news-item');
-                newsTitleInput.value = newsItem.querySelector('h2').textContent;
-                newsContentInput.value = newsItem.querySelector('p').textContent;
-                newsImageInput.value = newsItem.querySelector('img').src;
-                editingIndex = Array.from(newsList.children).indexOf(newsItem.parentElement);
-                newsForm.style.display = 'block'; // Show the form for editing
-            }
-
-            if (e.target.classList.contains('delete-button')) {
-                e.target.closest('.col').remove(); // Remove the news item
-            }
-        });
-
-        document.getElementById('cancel-button').addEventListener('click', function() {
-            newsForm.reset();
-            newsForm.style.display = 'none'; // Hide the form on cancel
-        });
-    </script>
 </body>
 </html>
-
