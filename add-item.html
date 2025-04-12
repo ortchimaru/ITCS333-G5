@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Item</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+</head>
+<body>
+
+  <header>
+    <nav class="container">
+      <h1>Add New Item</h1>
+      <a href="marketplace.html" class="button secondary">Back to Marketplace</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <form>
+      <h2>Item Details</h2>
+
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" placeholder="e.g. Calculus Textbook" required />
+
+      <label for="author">Author (if book)</label>
+      <input type="text" id="author" name="author" placeholder="e.g. Stewart" />
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" placeholder="Brief item details..." required></textarea>
+
+      <label for="price">Price ($)</label>
+      <input type="number" id="price" name="price" min="0" step="0.01" placeholder="e.g. 25.00" required />
+
+      <label for="condition">Condition</label>
+      <select id="condition" name="condition" required>
+        <option value="">Select condition</option>
+        <option value="new">New</option>
+        <option value="like-new">Like New</option>
+        <option value="used">Used</option>
+        <option value="fair">Fair</option>
+      </select>
+
+      <label for="calc.jpg">Upload Image</label>
+      <input type="file" id="image" name="image" accept="image/*" />
+
+      <button type="submit" class="primary">Submit Listing</button>
+    </form>
+  </main>
+
+  <footer class="container" style="text-align: center; margin-top: 4rem;">
+    <p>&copy; 2025 Campus Hub</p>
+  </footer>
+
+</body>
+</html>
