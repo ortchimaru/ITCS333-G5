@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus News</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <style> 
+        header {
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .news-item {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .news-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        #news-form {
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        button.primary {
+            background-color: #17351e; /* Green for the main button */
+            text-align: center;
+        }
+        button.success {
+            background-color: #17a2b8; /* Light blue for submit button */
+        }
+        button.warning {
+            background-color: #129654; /* Yellow for edit button */
+            color: black;
+        }
+        button.danger {
+            background-color: #dc3545; /* Red for delete button */
+        }
+        button.secondary {
+            background-color: #6c757d; /* Gray for cancel button */
+        }
+    </style>
+</head>
+<body>
+    <header class="container">
+        <h1 class="text-center">Campus News</h1>
+    </header>
+    <main class="container mt-4">
+        <button class="primary">Add New Item</button>
+        <div class="grid" id="news-list">
+            <div class="col">
+                <div class="news-item">
+                    <img src="https://via.placeholder.com/300" alt="Sample News">
+                    <h2>Sample News Title</h2>
+                    <p>This is a sample news content. It can be edited or deleted.</p>
+                    <button class="warning">Edit</button>
+                    <button class="danger">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <form class="mt-4" id="news-form">
+            <label for="news-title">Title:</label>
+            <input type="text" id="news-title" placeholder="Enter news title" required>
+            <label for="news-content">Content:</label>
+            <textarea id="news-content" placeholder="Enter news content" required></textarea>
+            <label for="news-image">Image URL:</label>
+            <input type="text" id="news-image" placeholder="Enter image URL">
+            <button type="submit" class="success">Submit</button>
+            <button type="button" class="secondary">Cancel</button>
+        </form>
+    </main>
+</body>
+</html>
