@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create New Event</title>
+  <!-- <link rel="stylesheet" href="styles.css"/> -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+        <h1>Create New Event</h1>
+    </header>
+
+<main>
+
+
+    <form class="event-form" method="post" action="#">
+      
+
+      <label for="title">Event Title</label>
+      <input type="text" required id="title">
+
+      <label for="date">Date </label>
+      <input type="date" required id="date">
+
+      <label for="time">Event Time</label>
+      <input type="time" required id="time">
+
+      <label for="loc">Location</label>
+      <input type="text" required id="loc">
+
+      <label for="col">College</label>
+      <select id="col" required>
+        <option value="">Select College</option>
+        <option value="">College of Information Technology</option>
+        <option value="">College of Engineering</option>
+        <option value="">College of Science</option>
+        <option value="">College of Health Sciences</option>
+        <option value="">College of Business</option>
+      </select>
+
+      <label for="desc">Description</label>
+      <textarea id="desc" rows="5"></textarea>
+
+
+      
+
+      <div class="form-buttons">
+        <button type="submit" class="submit-btn">Submit</button>
+        <a href="event.html" class="cancel-link">Cancel</a>
+      </div>
+    </form>
+
+</main>
+
+
+  </div>
+
+  <footer>
+
+  </footer>
+</body>
+</html>
