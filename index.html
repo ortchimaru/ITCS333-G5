@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UOB Campus Hub</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-size: cover;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 42px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    nav li a {
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 1000px;
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    .card {
+      padding: 24px;
+      border-radius: 10px;
+      background-color: #184784;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+      transition: transform 0.2s ease;
+    }
+
+    .card h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 18px;
+      color: #ffffff;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-bottom: 20px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page Title -->
+  <header class="container-fluid">
+    <h1>UOB Campus Hub</h1>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="container-fluid">
+    <ul>
+      <li><a href="/Course Notes/Main Page.html" >Course Notes</a></li>
+      <li><a href="#" target="_blank">Student Marketplace</a></li>
+      <li><a href="https://example.com/news" target="_blank">Campus News</a></li>
+      <li><a href="https://example.com/events" target="_blank">Events Calendar</a></li>
+      <li><a href="https://example.com/study-groups" target="_blank">Study Group Finder</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contents in Cards -->
+  <main>
+
+    <div class="card" id="course-notes">
+      <h2>📚 Course Notes</h2>
+      <p>Explore a growing collection of lecture notes, study guides, and exam tips contributed by students across all faculties. Whether you're reviewing last week's lecture or prepping for finals, our Course Notes section makes it easier to learn and succeed by giving you quick access to high-quality material.</p>
+    </div>
+
+    <div class="card" id="marketplace">
+      <h2>🛍️ Student Marketplace</h2>
+      <p>Looking to sell your old books or grab a great deal on a used laptop? The Student Marketplace connects UOB students in a safe, convenient place to buy, sell, and trade academic and personal items. From electronics and textbooks to dorm essentials, it’s all here!</p>
+    </div>
+
+    <div class="card" id="news">
+      <h2>📰 Campus News</h2>
+      <p>Stay informed with all the latest from the University of Bahrain. From important academic updates to cultural events and student initiatives, our Campus News hub ensures you’re always in the loop on what’s happening across campus.</p>
+    </div>
+
+    <div class="card" id="events">
+      <h2>📅 Events Calendar</h2>
+      <p>Never miss an opportunity to connect, learn, or have fun. The Events Calendar highlights upcoming workshops, club meetings, university-wide celebrations, and more. Whether you're looking for academic enrichment or social experiences, this is your go-to guide.</p>
+    </div>
+
+    <div class="card" id="study-groups">
+      <h2>🤝 Study Group Finder</h2>
+      <p>Team up with fellow students who are taking the same courses or preparing for similar exams. The Study Group Finder helps you connect, organize, and collaborate on your learning goals. It’s the perfect tool to beat procrastination and make studying more effective—and more fun!</p>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <small>© 2025 UOB Campus Hub</small>
+  </footer>
+
+</body>
+</html>
