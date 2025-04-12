@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Study Group Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <style>
+        .group-card {
+            transition: transform 0.2s;
+        }
+        .group-card:hover {
+            transform: translateY(-5px);
+        }
+        .search-container {
+            background-color: var(--card-background-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo {
+            width: 30px;
+            height: 30px;
+        }
+        .comment {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        .comment-author {
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li>
+                <div class="logo-container">
+                    <img src="C:\Users\ASM\Desktop\StudyGroupFinder\logo\UOB-Logo-Transparant.png" alt="University Logo" class="logo">
+                    <strong>Study Group Finder</strong>
+                </div>
+            </li>
+        </ul>
+        <ul>
+            <li><a href="#listing">Browse Groups</a></li>
+            <li><a href="#create">Create Group</a></li>
+        </ul>
+    </nav>
+
+
+    <main class="container">
+        <section id="listing">
+            <h2>Find Study Groups</h2>
+            
+            <div class="search-container">
+                <div class="grid">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search groups..." aria-label="Search">
+                    </div>
+                    <div class="filters">
+                        <select aria-label="Filter by course">
+                            <option value="">All Courses</option>
+                            <option value="cs">Computer Science</option>
+                            <option value="math">Mathematics</option>
+                            <option value="eng">Engineering</option>
+                        </select>
+                        <select aria-label="Filter by day">
+                            <option value="">Any Day</option>
+                            <option value="U">Sunday</option>
+                            <option value="M">Monday</option>
+                            <option value="T">Tuesday</option>
+                            <option value="W">Wednesday</option>
+                            <option value="H">Thursday</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="sorting">
+                    <small>Sort by:</small>
+                    <button>Newest</button>
+                    <button>Most Members</button>
+                    <button>Soonest Meeting</button>
+                </div>
+            </div>
+            
+            <div class="grid">
+                <article class="group-card">
+                    <header>
+                        <h3>CS 101 Study Group</h3>
+                        <p>Computer Science</p>
+                    </header>
+                    <p>Weekly meetups to review algorithms and data structures</p>
+                    <footer>
+                        <p><small>Next meeting: Mon, 3pm · 12 members</small></p>
+                        <a href="#detail" role="button">View Details</a>
+                    </footer>
+                </article>
+                
+                <article class="group-card">
+                    <header>
+                        <h3>Calculus Study Group</h3>
+                        <p>Mathematics</p>
+                    </header>
+                    <p>Collaborative problem solving for Calculus II</p>
+                    <footer>
+                        <p><small>Next meeting: Wed, 2pm · 8 members</small></p>
+                        <a href="#detail" role="button">View Details</a>
+                    </footer>
+                </article>
+                
+                <article class="group-card">
+                    <header>
+                        <h3>Physics Study Group</h3>
+                        <p>Physics</p>
+                    </header>
+                    <p>Preparing for midterm exams together</p>
+                    <footer>
+                        <p><small>Next meeting: Fri, 4pm · 5 members</small></p>
+                        <a href="#detail" role="button">View Details</a>
+                    </footer>
+                </article>
+            </div>
+            
+            <div class="pagination">
+                <button>1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>Next →</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="#create" role="button">Create New Study Group</a>
+            </div>
+        </section>
+        
+        <section id="create">
+            <h2>Create New Study Group</h2>
+            
+            <form>
+                <label for="group-name">
+                    Group Name
+                    <input type="text" id="group-name" name="group-name" required placeholder="e.g., CS 101 Study Group">
+                </label>
+                
+                <label for="course">
+                    Course
+                    <select id="course" name="course" required>
+                        <option value="" disabled selected>Select a course</option>
+                        <option value="cs101">CS 101 - Introduction to Computer Science</option>
+                        <option value="math201">MATH 201 - Calculus I</option>
+                        <option value="phy101">PHY 101 - General Physics</option>
+                    </select>
+                </label>
+                
+                <label for="description">
+                    Description
+                    <textarea id="description" name="description" required placeholder="What will your group focus on?"></textarea>
+                </label>
+                
+                <label for="meeting-day">
+                    Meeting Day
+                    <select id="meeting-day" name="meeting-day" required>
+                        <option value="" disabled selected>Select day</option>
+                        <option value="">Any Day</option>
+                        <option value="U">Sunday</option>
+                        <option value="M">Monday</option>
+                        <option value="T">Tuesday</option>
+                        <option value="W">Wednesday</option>
+                        <option value="H">Thursday</option>
+                    </select>
+                </label>
+                
+                <label for="meeting-time">
+                    Meeting Time
+                    <input type="time" id="meeting-time" name="meeting-time" required>
+                </label>
+                
+                <label for="location">
+                    Location
+                    <input type="text" id="location" name="location" required placeholder="e.g., S40-2050">
+                </label>
+                
+                <label for="max-members">
+                    Maximum Members (optional)
+                    <input type="number" id="max-members" name="max-members" min="2" placeholder="Leave blank for no limit">
+                </label>
+                
+                <div class="grid">
+                    <button type="submit" class="primary">Create Group</button>
+                    <a href="#listing" role="button" class="secondary">Cancel</a>
+                </div>
+            </form>
+        </section>
+        
+        <section id="detail">
+            <a href="#listing" class="secondary">← Back to all groups</a>
+            
+            <article>
+                <header>
+                    <h2>CS 101 Study Group</h2>
+                    <p>Computer Science · 12 members</p>
+                </header>
+                
+                <div class="grid">
+                    <div>
+                        <h4>Description</h4>
+                        <p>Weekly meetups to review algorithms and data structures. All skill levels welcome!</p>
+                        
+                        <h4>Schedule</h4>
+                        <p>Every Monday at 3:00 PM</p>
+                        
+                        <h4>Location</h4>
+                        <p>S40-2046</p>
+                    </div>
+                    
+                    <div>
+                        <h4>Organizer</h4>
+                        <p>Sami Ali (Sami.Ali@stu.uob.edu.bh)</p>
+                        
+                        <h4>Created</h4>
+                        <p>September 12, 2025</p>
+                        
+                        <h4>Tags</h4>
+                        <p>#algorithms #programming #beginner-friendly</p>
+                    </div>
+                </div>
+                
+                <footer>
+                    <div class="grid">
+                        <button>Join Group</button>
+                        <a href="#create" role="button" class="secondary">Edit</a>
+                        <button class="contrast">Delete</button>
+                    </div>
+                </footer>
+            </article>
+            
+            <article>
+                <header>
+                    <h3>Comments</h3>
+                </header>
+                
+                <div class="comment">
+                    <p class="comment-author">Mohammed Abdullah · 2 days ago</p>
+                    <p>Is this group still meeting during finals week? I'd love to join for some last-minute review!</p>
+                </div>
+                
+                <div class="comment">
+                    <p class="comment-author">Organizer: Sami Ali · 1 day ago</p>
+                    <p>Yes! We'll have extended hours during finals week. Check the updated schedule in the description.</p>
+                </div>
+                
+                <form>
+                    <label for="new-comment">
+                        Add a comment
+                        <textarea id="new-comment" name="new-comment" placeholder="Ask a question or share information..."></textarea>
+                    </label>
+                    <button type="submit">Post Comment</button>
+                </form>
+            </article>
+        </section>
+    </main>
+    
+    <footer class="container-fluid">
+        <small>University Study Group Finder </small>
+    </footer>
+</body>
+</html>
