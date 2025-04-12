@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ayoub Marketplace</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+</head>
+<body>
+
+  <header>
+    <nav class="container">
+      <h1>alansari Marketplace</h1>
+      <a href="add-item.html" class="button secondary">Add New Item</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <section class="grid" style="grid-template-columns: 1fr auto; gap: 1rem;">
+      <input type="search" placeholder="Search items..." />
+      <select>
+        <option value="">Sort by</option>
+        <option value="price">Price</option>
+        <option value="name">Name</option>
+      </select>
+    </section>
+
+    
+    <section class="grid" style="gap: 2rem; margin-top: 2rem;">
+      <article>
+        <img src="calc.jpg" alt="Book" />
+        <h2>Calculus Textbook</h2>
+        <p>Excellent condition, barely used.</p>
+        <strong>$25.00</strong>
+        <a href="view-item.html" class="button primary">View Details</a>
+      </article>
+    </section>
+
+    
+    <section class="grid" style="justify-content: center; margin-top: 2rem;">
+      <button class="secondary">Previous</button>
+      <button class="secondary">Next</button>
+    </section>
+  </main>
+
+  <footer class="container" style="text-align: center; margin-top: 4rem;">
+    <p>&copy; 2025 Campus Hub</p>
+  </footer>
+
+</body>
+</html>
