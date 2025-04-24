@@ -1,47 +1,36 @@
 <!DOCTYPE html>
-
+<html>
 <head>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css" />
   <title>Note Details</title>
-
 </head>
 
 <body>
-
   <main class="container">
-
-    <h1>📝 Derivatives Summary</h1>
-
-    <p><strong>Course:</strong> MATH201</p>
-    <p><strong>Uploaded by:</strong> Mohammed Ali</p>
-    <p><strong>Description:</strong> Covers advanced integration, applications of integrals, sequences and series, and an intro to polar and parametric equations.</p>
-    <p><strong>Downloads:</strong> 20</p>
+    <h1 id="noteTitle">📝 Note Details</h1>
+    <p><strong>Course:</strong> <span id="noteCourse"></span></p>
+    <p><strong>Uploaded by:</strong> <span id="noteUploader"></span></p>
+    <p><strong>Description:</strong> <span id="noteDescription"></span></p>
+    <p><strong>Downloads:</strong> <span id="noteDownloads"></span></p>
 
     <a href="#">Download File</a>
 
-    <hr/>
-
-    <h2>🛠 Actions</h2>
-
+    <hr />
     <nav>
       <a href="Create Page.html">Create/Edit</a>
-      <a href="#">Delete</a>
       <a href="Main Page.html">← Back to listing</a>
     </nav>
 
-    <hr/>
-
+    <hr />
     <h2>💬 Comments</h2>
-
     <form>
       <label for="comment">Leave a comment:</label>
       <input type="text" id="comment" name="comment" placeholder="Type your comment..." required />
       <button type="submit">Post</button>
     </form>
-    
   </main>
 
+  <script src="details.js"></script>
 </body>
 </html>

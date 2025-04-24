@@ -1,44 +1,46 @@
 <!DOCTYPE html>
-
+<html>
 <head>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.5.10/css/pico.min.css" />
   <title>Create New Note</title>
-
+  <style>
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+  </style>
 </head>
 
 <body>
-
   <main class="container">
-
     <h1>➕ Upload New Course Note</h1>
-
-    <form action="#" method="post">
-
+    <form id="noteForm">
       <label for="title">Note Title *</label>
-      <input type="text" id="title" name="title" placeholder="e.g., Week 3 - Loops" required />
+      <input type="text" id="title" name="title" placeholder="e.g., Week 3 - Loops" />
+      <div class="error" id="titleError"></div>
 
       <label for="course">Course *</label>
-      <select id="course" name="course" required>
+      <select id="course" name="course">
         <option value="">Select course</option>
         <option>ITCS333</option>
         <option>MATH201</option>
       </select>
+      <div class="error" id="courseError"></div>
 
       <label for="description">Description *</label>
-      <input type="text" id="description" name="description" placeholder="Brief summary..." required />
-
+      <input type="text" id="description" name="description" placeholder="Brief summary..." />
+      <div class="error" id="descriptionError"></div>
 
       <label for="file">Upload File</label>
       <input type="file" id="file" name="file" accept=".pdf,.docx,.pptx" />
 
       <button type="submit">Submit</button>
       <a href="Main Page.html">Cancel</a>
-
     </form>
-
   </main>
 
+  <script src="create.js"></script>
 </body>
 </html>
