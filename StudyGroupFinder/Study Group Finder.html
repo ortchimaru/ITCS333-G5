@@ -8,6 +8,7 @@
     <style>
         .group-card {
             transition: transform 0.2s;
+            cursor: pointer;
         }
         .group-card:hover {
             transform: translateY(-5px);
@@ -22,6 +23,7 @@
             display: flex;
             justify-content: center;
             margin-top: 2rem;
+            gap: 0.5rem;
         }
         .logo-container {
             display: flex;
@@ -41,6 +43,33 @@
             font-weight: bold;
             color: var(--primary);
         }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            padding: 1rem;
+        }
+        .hidden {
+            display: none;
+        }
+        .active-section {
+            display: block;
+        }
+        section {
+            display: none;
+        }
+        .active-pagination {
+            background-color: var(--primary);
+            color: white;
+        }
+        .form-error {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -48,202 +77,149 @@
         <ul>
             <li>
                 <div class="logo-container">
-                    <img src="StudyGroupFinder/UOBLogo.png" alt="UOB Logo" class="logo" width="120" height="auto">
+                    <img src="logo/UOB-Logo-Transparant.png" alt="University Logo" class="logo">
                     <strong>Study Group Finder</strong>
                 </div>
             </li>
         </ul>
         <ul>
-            <li><a href="#listing">Browse Groups</a></li>
-            <li><a href="#create">Create Group</a></li>
+            <li><a href="#" class="nav-link" data-section="listing">Browse Groups</a></li>
+            <li><a href="#" class="nav-link" data-section="create">Create Group</a></li>
         </ul>
     </nav>
 
-
     <main class="container">
-        <section id="listing">
+        <!-- Loading indicator -->
+        <div id="loading" class="loading hidden">
+            <p>Loading data...</p>
+            <progress></progress>
+        </div>
+
+        <!-- Error message -->
+        <div id="error-message" class="error-message hidden"></div>
+
+        <!-- Listing Section -->
+        <section id="listing" class="active-section">
             <h2>Find Study Groups</h2>
             
             <div class="search-container">
                 <div class="grid">
                     <div class="search-bar">
-                        <input type="text" placeholder="Search groups..." aria-label="Search">
+                        <input type="text" id="search-input" placeholder="Search groups..." aria-label="Search">
                     </div>
                     <div class="filters">
-                        <select aria-label="Filter by course">
+                        <select id="course-filter" aria-label="Filter by course">
                             <option value="">All Courses</option>
-                            <option value="cs">Computer Science</option>
-                            <option value="math">Mathematics</option>
-                            <option value="eng">Engineering</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Physics">Physics</option>
                         </select>
-                        <select aria-label="Filter by day">
+                        <select id="day-filter" aria-label="Filter by day">
                             <option value="">Any Day</option>
-                            <option value="U">Sunday</option>
-                            <option value="M">Monday</option>
-                            <option value="T">Tuesday</option>
-                            <option value="W">Wednesday</option>
-                            <option value="H">Thursday</option>
+                            <option value="Sunday">Sunday</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="sorting">
                     <small>Sort by:</small>
-                    <button>Newest</button>
-                    <button>Most Members</button>
-                    <button>Soonest Meeting</button>
+                    <button class="sort-btn" data-sort="newest">Newest</button>
+                    <button class="sort-btn" data-sort="members">Most Members</button>
+                    <button class="sort-btn" data-sort="meeting">Soonest Meeting</button>
                 </div>
             </div>
             
-            <div class="grid">
-                <article class="group-card">
-                    <header>
-                        <h3>CS 101 Study Group</h3>
-                        <p>Computer Science</p>
-                    </header>
-                    <p>Weekly meetups to review algorithms and data structures</p>
-                    <footer>
-                        <p><small>Next meeting: Mon, 3pm · 12 members</small></p>
-                        <a href="#detail" role="button">View Details</a>
-                    </footer>
-                </article>
-                
-                <article class="group-card">
-                    <header>
-                        <h3>Calculus Study Group</h3>
-                        <p>Mathematics</p>
-                    </header>
-                    <p>Collaborative problem solving for Calculus II</p>
-                    <footer>
-                        <p><small>Next meeting: Wed, 2pm · 8 members</small></p>
-                        <a href="#detail" role="button">View Details</a>
-                    </footer>
-                </article>
-                
-                <article class="group-card">
-                    <header>
-                        <h3>Physics Study Group</h3>
-                        <p>Physics</p>
-                    </header>
-                    <p>Preparing for midterm exams together</p>
-                    <footer>
-                        <p><small>Next meeting: Fri, 4pm · 5 members</small></p>
-                        <a href="#detail" role="button">View Details</a>
-                    </footer>
-                </article>
+            <div id="groups-container" class="grid">
+                <!-- Groups will be dynamically inserted here -->
             </div>
             
-            <div class="pagination">
-                <button>1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>Next →</button>
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be dynamically inserted here -->
             </div>
             
             <div style="text-align: center; margin-top: 2rem;">
-                <a href="#create" role="button">Create New Study Group</a>
+                <a href="#" class="nav-link" data-section="create" role="button">Create New Study Group</a>
             </div>
         </section>
         
+        <!-- Create Group Section -->
         <section id="create">
             <h2>Create New Study Group</h2>
             
-            <form>
+            <form id="create-group-form">
                 <label for="group-name">
                     Group Name
                     <input type="text" id="group-name" name="group-name" required placeholder="e.g., CS 101 Study Group">
+                    <div id="group-name-error" class="form-error"></div>
                 </label>
                 
                 <label for="course">
                     Course
                     <select id="course" name="course" required>
                         <option value="" disabled selected>Select a course</option>
-                        <option value="cs101">CS 101 - Introduction to Computer Science</option>
-                        <option value="math201">MATH 201 - Calculus I</option>
-                        <option value="phy101">PHY 101 - General Physics</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Physics">Physics</option>
                     </select>
+                    <div id="course-error" class="form-error"></div>
                 </label>
                 
                 <label for="description">
                     Description
                     <textarea id="description" name="description" required placeholder="What will your group focus on?"></textarea>
+                    <div id="description-error" class="form-error"></div>
                 </label>
                 
                 <label for="meeting-day">
                     Meeting Day
                     <select id="meeting-day" name="meeting-day" required>
                         <option value="" disabled selected>Select day</option>
-                        <option value="">Any Day</option>
-                        <option value="U">Sunday</option>
-                        <option value="M">Monday</option>
-                        <option value="T">Tuesday</option>
-                        <option value="W">Wednesday</option>
-                        <option value="H">Thursday</option>
+                        <option value="Sunday">Sunday</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
                     </select>
+                    <div id="meeting-day-error" class="form-error"></div>
                 </label>
                 
                 <label for="meeting-time">
                     Meeting Time
                     <input type="time" id="meeting-time" name="meeting-time" required>
+                    <div id="meeting-time-error" class="form-error"></div>
                 </label>
                 
                 <label for="location">
                     Location
                     <input type="text" id="location" name="location" required placeholder="e.g., S40-2050">
+                    <div id="location-error" class="form-error"></div>
                 </label>
                 
                 <label for="max-members">
                     Maximum Members (optional)
                     <input type="number" id="max-members" name="max-members" min="2" placeholder="Leave blank for no limit">
+                    <div id="max-members-error" class="form-error"></div>
                 </label>
                 
                 <div class="grid">
                     <button type="submit" class="primary">Create Group</button>
-                    <a href="#listing" role="button" class="secondary">Cancel</a>
+                    <a href="#" class="nav-link secondary" data-section="listing" role="button">Cancel</a>
                 </div>
             </form>
         </section>
         
+        <!-- Group Detail Section -->
         <section id="detail">
-            <a href="#listing" class="secondary">← Back to all groups</a>
+            <a href="#" class="nav-link secondary" data-section="listing">← Back to all groups</a>
             
-            <article>
-                <header>
-                    <h2>CS 101 Study Group</h2>
-                    <p>Computer Science · 12 members</p>
-                </header>
-                
-                <div class="grid">
-                    <div>
-                        <h4>Description</h4>
-                        <p>Weekly meetups to review algorithms and data structures. All skill levels welcome!</p>
-                        
-                        <h4>Schedule</h4>
-                        <p>Every Monday at 3:00 PM</p>
-                        
-                        <h4>Location</h4>
-                        <p>S40-2046</p>
-                    </div>
-                    
-                    <div>
-                        <h4>Organizer</h4>
-                        <p>Sami Ali (Sami.Ali@stu.uob.edu.bh)</p>
-                        
-                        <h4>Created</h4>
-                        <p>September 12, 2025</p>
-                        
-                        <h4>Tags</h4>
-                        <p>#algorithms #programming #beginner-friendly</p>
-                    </div>
-                </div>
-                
-                <footer>
-                    <div class="grid">
-                        <button>Join Group</button>
-                        <a href="#create" role="button" class="secondary">Edit</a>
-                        <button class="contrast">Delete</button>
-                    </div>
-                </footer>
+            <article id="group-detail">
+                <!-- Group details will be dynamically inserted here -->
             </article>
             
             <article>
@@ -251,20 +227,15 @@
                     <h3>Comments</h3>
                 </header>
                 
-                <div class="comment">
-                    <p class="comment-author">Mohammed Abdullah · 2 days ago</p>
-                    <p>Is this group still meeting during finals week? I'd love to join for some last-minute review!</p>
+                <div id="comments-container">
+                    <!-- Comments will be dynamically inserted here -->
                 </div>
                 
-                <div class="comment">
-                    <p class="comment-author">Organizer: Sami Ali · 1 day ago</p>
-                    <p>Yes! We'll have extended hours during finals week. Check the updated schedule in the description.</p>
-                </div>
-                
-                <form>
+                <form id="comment-form">
                     <label for="new-comment">
                         Add a comment
-                        <textarea id="new-comment" name="new-comment" placeholder="Ask a question or share information..."></textarea>
+                        <textarea id="new-comment" name="new-comment" required placeholder="Ask a question or share information..."></textarea>
+                        <div id="comment-error" class="form-error"></div>
                     </label>
                     <button type="submit">Post Comment</button>
                 </form>
@@ -273,7 +244,8 @@
     </main>
     
     <footer class="container-fluid">
-        <small>University Study Group Finder </small>
+        <small>University Study Group Finder</small>
     </footer>
+    <script src="/StudyGroupFinderJs/StudyGroupFinder.JS"></script>
 </body>
 </html>
