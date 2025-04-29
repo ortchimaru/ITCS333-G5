@@ -17,36 +17,33 @@
 
   <main class="container">
     
+   
     <section class="grid" style="grid-template-columns: 1fr auto; gap: 1rem;">
-      <input type="search" placeholder="Search items..." />
-      <select>
+      <input type="search" id="searchInput" placeholder="Search items..." />
+      <select id="sortSelect">
         <option value="">Sort by</option>
         <option value="price">Price</option>
-        <option value="name">Name</option>
+        <option value="title">Name</option>
       </select>
     </section>
 
     
-    <section class="grid" style="gap: 2rem; margin-top: 2rem;">
-      <article>
-        <img src="calc.jpg" alt="Book" />
-        <h2>Calculus Textbook</h2>
-        <p>Excellent condition, barely used.</p>
-        <strong>$25.00</strong>
-        <a href="view-item.html" class="button primary">View Details</a>
-      </article>
+    <section id="itemsList" class="grid" style="gap: 2rem; margin-top: 2rem;">
+     
     </section>
 
-    
     <section class="grid" style="justify-content: center; margin-top: 2rem;">
-      <button class="secondary">Previous</button>
-      <button class="secondary">Next</button>
+      <button id="prevPage" class="secondary">Previous</button>
+      <button id="nextPage" class="secondary">Next</button>
     </section>
+    
   </main>
 
   <footer class="container" style="text-align: center; margin-top: 4rem;">
-    <p>&copy; 2025 Campus Hub</p>
+    <p>&copy; 2025 CAmpus Hub</p>
   </footer>
+
+  <script src="market.js"></script>
 
 </body>
 </html>
