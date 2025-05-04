@@ -1,81 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus News</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <style> 
-        header {
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-            text-align: center;
-        }
-        .news-item {
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .news-item img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        #news-form {
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        button.primary {
-            background-color: #17351e; /* Green for the main button */
-            text-align: center;
-        }
-        button.success {
-            background-color: #17a2b8; /* Light blue for submit button */
-        }
-        button.warning {
-            background-color: #129654; /* Yellow for edit button */
-            color: black;
-        }
-        button.danger {
-            background-color: #dc3545; /* Red for delete button */
-        }
-        button.secondary {
-            background-color: #6c757d; /* Gray for cancel button */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campus News</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <style>
+    .news-item {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .news-item img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .modal.show {
+      display: block;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .overlay.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <header class="container">
-        <h1 class="text-center">Campus News</h1>
-    </header>
-    <main class="container mt-4">
-        <button class="primary">Add New Item</button>
-        <div class="grid" id="news-list">
-            <div class="col">
-                <div class="news-item">
-                    <img src="https://via.placeholder.com/300" alt="Sample News">
-                    <h2>Sample News Title</h2>
-                    <p>This is a sample news content. It can be edited or deleted.</p>
-                    <button class="warning">Edit</button>
-                    <button class="danger">Delete</button>
-                </div>
-            </div>
-        </div>
+  <main class="container">
+    <h1>Campus News</h1>
 
-        <form class="mt-4" id="news-form">
-            <label for="news-title">Title:</label>
-            <input type="text" id="news-title" placeholder="Enter news title" required>
-            <label for="news-content">Content:</label>
-            <textarea id="news-content" placeholder="Enter news content" required></textarea>
-            <label for="news-image">Image URL:</label>
-            <input type="text" id="news-image" placeholder="Enter image URL">
-            <button type="submit" class="success">Submit</button>
-            <button type="button" class="secondary">Cancel</button>
-        </form>
-    </main>
+    <form id="newsForm">
+      <h3>Add News</h3>
+      <label>
+        Title:
+        <input type="text" id="title" required />
+      </label>
+      <label>
+        Content:
+        <textarea id="content" required></textarea>
+      </label>
+      <label>
+        Image URL:
+        <input type="url" id="imageUrl" required />
+      </label>
+      <button type="submit">Add News</button>
+    </form>
+
+    <hr />
+
+    <input type="search" id="searchInput" placeholder="Search news..." />
+    <select id="sortSelect">
+      <option value="recent">Sort by Recent</option>
+      <option value="title">Sort by Title</option>
+    </select>
+
+    <div id="newsList"></div>
+    <nav id="pagination"></nav>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="modal">
+    <h3 id="modalTitle"></h3>
+    <img id="modalImage" src="" alt="" />
+    <p id="modalContent"></p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+
+  <script>
+    const newsForm = document.getElementById('newsForm');
+    const newsList = document.getElementById('newsList');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const pagination = document.getElementById('pagination');
+  
+    const modal = document.getElementById('modal');
+    const overlay = document.getElementById('overlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalImage = document.getElementById('modalImage');
+    const modalContent = document.getElementById('modalContent');
+  
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const imageInput = document.getElementById('imageUrl');
+  
+    const ITEMS_PER_PAGE = 3;
+    let currentPage = 1;
+    let allNews = [];
+    let editIndex = null;
+  
+    function saveToLocalStorage() {
+      localStorage.setItem('campusNews', JSON.stringify(allNews));
+    }
+  
+    function loadFromLocalStorage() {
+      const stored = localStorage.getItem('campusNews');
+      if (stored) {
+        allNews = JSON.parse(stored);
+      }
+    }
+  
+    function renderNews() {
+      const searchQuery = searchInput.value.toLowerCase();
+      let filtered = allNews.filter(item => item.title.toLowerCase().includes(searchQuery));
+  
+      if (sortSelect.value === 'title') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      } else {
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      }
+  
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
+  
+      newsList.innerHTML = '';
+      paginated.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'news-item';
+        const globalIndex = allNews.indexOf(item);
+        div.innerHTML = `
+          <img src="${item.image}" alt="News Image" />
+          <h3>${item.title}</h3>
+          <p>${item.content.substring(0, 100)}...</p>
+          <button onclick="showDetail(${globalIndex})">Read More</button>
+          <button onclick="editNews(${globalIndex})">Edit</button>
+          <button onclick="deleteNews(${globalIndex})">Delete</button>
+        `;
+        newsList.appendChild(div);
+      });
+  
+      renderPagination(filtered.length);
+    }
+  
+    function renderPagination(totalItems) {
+      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+      pagination.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === currentPage) btn.setAttribute('aria-current', 'page');
+        btn.onclick = () => {
+          currentPage = i;
+          renderNews();
+        };
+        pagination.appendChild(btn);
+      }
+    }
+  
+    function showDetail(index) {
+      const item = allNews[index];
+      modalTitle.textContent = item.title;
+      modalImage.src = item.image;
+      modalContent.textContent = item.content;
+      modal.classList.add('show');
+      overlay.classList.add('show');
+    }
+  
+    function closeModal() {
+      modal.classList.remove('show');
+      overlay.classList.remove('show');
+    }
+  
+    function deleteNews(index) {
+      if (confirm('Are you sure you want to delete this news item?')) {
+        allNews.splice(index, 1);
+        saveToLocalStorage();
+        renderNews();
+      }
+    }
+  
+    function editNews(index) {
+      const item = allNews[index];
+      titleInput.value = item.title;
+      contentInput.value = item.content;
+      imageInput.value = item.image;
+      editIndex = index;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
+    newsForm.onsubmit = (e) => {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+      const image = imageInput.value.trim();
+  
+      if (!title || !content || !image) {
+        alert('Please fill in all fields correctly.');
+        return;
+      }
+  
+      const newsItem = {
+        title,
+        content,
+        image,
+        date: new Date().toISOString()
+      };
+  
+      if (editIndex !== null) {
+        allNews[editIndex] = newsItem;
+        editIndex = null;
+      } else {
+        allNews.unshift(newsItem);
+      }
+  
+      saveToLocalStorage();
+      renderNews();
+      newsForm.reset();
+    };
+  
+    // Initial Load
+    loadFromLocalStorage();
+    renderNews();
+  
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      renderNews();
+    });
+    sortSelect.addEventListener('change', () => {
+      renderNews();
+    });
+  </script>
+  
 </body>
 </html>
