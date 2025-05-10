@@ -1,3 +1,5 @@
+details.html
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,29 +10,28 @@
 
 <body>
   <main class="container">
-    <h1 id="noteTitle">📝 Note Details</h1>
+    <h1 id="noteTitle">Note Details</h1>
     <p><strong>Course:</strong> <span id="noteCourse"></span></p>
     <p><strong>Uploaded by:</strong> <span id="noteUploader"></span></p>
     <p><strong>Description:</strong> <span id="noteDescription"></span></p>
     <p><strong>Downloads:</strong> <span id="noteDownloads"></span></p>
-
-    <a href="#">Download File</a>
+    <p><strong>File:</strong> <a id="noteFile" href="#" target="_blank">Download</a></p>
 
     <hr />
     <nav>
       <a href="Create Page.html">Create/Edit</a>
-      <a href="Main Page.html">← Back to listing</a>
+      <a href="Main Page.html">Back to listing</a>
     </nav>
 
     <hr />
-    <h2>💬 Comments</h2>
-    <form>
-      <label for="comment">Leave a comment:</label>
-      <input type="text" id="comment" name="comment" placeholder="Type your comment..." required />
-      <button type="submit">Post</button>
+    <h2>Comments</h2>
+    <div id="commentsList"></div>
+    
+    <form id="commentForm">
+      <textarea id="commentContent" placeholder="Write a comment..." required></textarea>
+      <button type="submit">Post Comment</button>
     </form>
   </main>
 
-  <script src="../CourseNotesJS/details.js"></script>
-</body>
+  <script src="../CourseNotesJS/details.js"></script></body>
 </html>
