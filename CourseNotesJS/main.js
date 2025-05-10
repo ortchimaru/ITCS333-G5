@@ -1,175 +1,96 @@
-// Get references to HTML elements needed for filtering and displaying notes
-const notesContainer = document.getElementById("notesContainer");
-const searchInput = document.getElementById("searchInput");
-const courseFilter = document.getElementById("courseFilter");
-const sortOption = document.getElementById("sortOption");
+document.addEventListener("DOMContentLoaded", () => {
+  const notesContainer = document.getElementById("notesContainer");
+  const searchInput = document.getElementById("searchInput");
+  const courseFilter = document.getElementById("courseFilter");
+  const sortOption = document.getElementById("sortOption");
+  const paginationControls = document.getElementById("paginationControls");
 
-// Variables for storing data and pagination state
-let allNotes = [];
-let currentPage = 1;
-const notesPerPage = 3; // Only show 3 notes per page
+  let currentPage = 1;
+  const limit = 3;
 
-// Fetch the notes JSON file from GitHub
-fetch("https://raw.githubusercontent.com/ortchimaru/Notes-Data/refs/heads/main/notes.json")
-  .then(response => {
-    // Handle fetch errors
-    if (!response.ok) {
-      throw new Error("Failed to fetch notes. Please try again later.");
+  function fetchNotes() {
+    const search = searchInput.value.trim();
+    const course = courseFilter.value;
+    const sort = sortOption.value;
+
+    let url = `../CourseNotesPHP/notes.php?page=${currentPage}&limit=${limit}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (course) url += `&course=${encodeURIComponent(course)}`;
+    if (sort) url += `&sort=${encodeURIComponent(sort)}`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(notes => {
+        renderNotes(notes);
+        renderPagination(notes.length);
+      })
+      .catch(error => {
+        console.error("Fetch error:", error);
+        notesContainer.innerHTML = `<p>❌ Failed to load notes: ${error.message}</p>`;
+      });
+  }
+
+  function renderNotes(notes) {
+    notesContainer.innerHTML = "";
+
+    if (!Array.isArray(notes) || notes.length === 0) {
+      notesContainer.innerHTML = "<p>📭 No notes found.</p>";
+      return;
     }
-    return response.json(); // Parse JSON if response is okay
-  })
-  .then(data => {
-    // Store the fetched notes and apply filters (render first time)
-    allNotes = data;
-    applyFilters();
-  })
-  .catch(error => {
-    // Show an error message if fetch fails
-    notesContainer.innerHTML = `<p style="color:red">${error.message}</p>`;
-  });
 
-/**
- * Display notes for the current page.
- * Each note is displayed in an article element with title, course, uploader, etc.
- */
-function renderNotes(notes) {
-  const start = (currentPage - 1) * notesPerPage;
-  const end = start + notesPerPage;
-  const paginated = notes.slice(start, end); // Get notes for current page
-
-  notesContainer.innerHTML = ""; // Clear previous notes
-
-  paginated.forEach(note => {
-    const article = document.createElement("article");
-    article.style.marginBottom = "2rem";
-    article.innerHTML = `
-      <h3><a href="Details.html" data-id="${note.id}" class="note-link">${note.title}</a></h3>
-      <ul>
-        <li><strong>Course:</strong> ${note.course}</li>
-        <li><strong>Uploaded by:</strong> ${note.uploader}</li>
-        <li><strong>Description:</strong> ${note.description}</li>
-        <li><strong>Downloads:</strong> ${note.downloads}</li>
-      </ul>
-    `;
-    notesContainer.appendChild(article);
-  });
-
-  // Store the selected note in localStorage when a title link is clicked
-  document.querySelectorAll(".note-link").forEach(link => {
-    link.addEventListener("click", function () {
-      const noteId = this.getAttribute("data-id");
-      const selectedNote = notes.find(note => note.id === noteId);
-      localStorage.setItem("selectedNote", JSON.stringify(selectedNote));
+    notes.forEach(note => {
+      const article = document.createElement("article");
+      article.innerHTML = `
+        <h3><a href="Details.html?id=${note.id}">${note.title}</a></h3>
+        <ul>
+          <li><strong>Course:</strong> ${note.course}</li>
+          <li><strong>Uploader:</strong> ${note.uploader}</li>
+          <li><strong>Description:</strong> ${note.description}</li>
+          <li><strong>Downloads:</strong> ${note.downloads}</li>
+          <li><strong>Date:</strong> ${note.created_at}</li>
+        </ul>
+      `;
+      notesContainer.appendChild(article);
     });
-  });
-}
-
-/**
- * Display pagination links and handle page switching
- */
-function renderPagination(notes) {
-  const pageCount = Math.ceil(notes.length / notesPerPage);
-  const nav = document.querySelector("nav[aria-label='Pagination']");
-  nav.innerHTML = "";
-
-  const ul = document.createElement("ul");
-
-  // Previous page button
-  const prevLi = document.createElement("li");
-  prevLi.innerHTML = `<a href="#">← Prev</a>`;
-  prevLi.onclick = () => {
-    if (currentPage > 1) {
-      currentPage--;
-      applyFilters();
-    }
-  };
-  ul.appendChild(prevLi);
-
-  // Page number buttons
-  for (let i = 1; i <= pageCount; i++) {
-    const li = document.createElement("li");
-    if (i === currentPage) {
-      li.innerHTML = `<strong>${i}</strong>`;
-    } else {
-      li.innerHTML = `<a href="#">${i}</a>`;
-      li.onclick = () => {
-        currentPage = i;
-        applyFilters();
-      };
-    }
-    ul.appendChild(li);
   }
 
-  // Next page button
-  const nextLi = document.createElement("li");
-  nextLi.innerHTML = `<a href="#">Next →</a>`;
-  nextLi.onclick = () => {
-    if (currentPage < pageCount) {
-      currentPage++;
-      applyFilters();
-    }
-  };
-  ul.appendChild(nextLi);
+  function renderPagination(noteCount) {
+    paginationControls.innerHTML = `
+      <button ${currentPage === 1 ? "disabled" : ""} id="prevBtn">← Prev</button>
+      <span> Page ${currentPage} </span>
+      <button ${noteCount < limit ? "disabled" : ""} id="nextBtn">Next →</button>
+    `;
 
-  nav.appendChild(ul);
-}
+    document.getElementById("prevBtn").onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        fetchNotes();
+      }
+    };
 
-/**
- * Filter notes based on search, course, and sort option
- * Then render filtered notes and pagination
- */
-function applyFilters() {
-  const searchText = searchInput.value.toLowerCase();
-  const selectedCourse = courseFilter.value;
-  const selectedSort = sortOption.value;
+    document.getElementById("nextBtn").onclick = () => {
+      if (noteCount === limit) {
+        currentPage++;
+        fetchNotes();
+      }
+    };
+  }
 
-  // Filter notes by title and course
-  let filtered = allNotes.filter(note => {
-    const titleMatch = note.title.toLowerCase().includes(searchText);
-    const courseMatch = selectedCourse ? note.course === selectedCourse : true;
-    return titleMatch && courseMatch;
+  // Listeners for filters
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
+    fetchNotes();
   });
 
-  // Sort notes by newest (using id as proxy)
-  if (selectedSort === "newest") {
-    for (let i = 0; i < filtered.length - 1; i++) {
-      for (let j = 0; j < filtered.length - i - 1; j++) {
-        if (filtered[j].id < filtered[j + 1].id) {
-          let temp = filtered[j];
-          filtered[j] = filtered[j + 1];
-          filtered[j + 1] = temp;
-        }
-      }
-    }
-  }
+  courseFilter.addEventListener("change", () => {
+    currentPage = 1;
+    fetchNotes();
+  });
 
-  // Sort notes by number of downloads
-  if (selectedSort === "downloads") {
-    for (let i = 0; i < filtered.length - 1; i++) {
-      for (let j = 0; j < filtered.length - i - 1; j++) {
-        if (filtered[j].downloads < filtered[j + 1].downloads) {
-          let temp = filtered[j];
-          filtered[j] = filtered[j + 1];
-          filtered[j + 1] = temp;
-        }
-      }
-    }
-  }
+  sortOption.addEventListener("change", () => {
+    currentPage = 1;
+    fetchNotes();
+  });
 
-  renderPagination(filtered); // Update pagination
-  renderNotes(filtered);     // Show filtered notes
-}
-
-// Event listeners to re-apply filters on user input
-searchInput.addEventListener("input", () => {
-  currentPage = 1;
-  applyFilters();
-});
-courseFilter.addEventListener("change", () => {
-  currentPage = 1;
-  applyFilters();
-});
-sortOption.addEventListener("change", () => {
-  currentPage = 1;
-  applyFilters();
+  fetchNotes();
 });
