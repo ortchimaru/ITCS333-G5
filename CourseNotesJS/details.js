@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.innerHTML = "<p style='color:red'>❌ Missing note ID.</p>";
     return;
   }
-
-  fetch(`https://coursenotes.ortchimaru1.repl.co/get-note.php?id=${id}`)
+  
+    fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/get-note.php?id=${id}`)
     .then(res => res.json())
     .then(note => {
       if (note.error) {
@@ -26,7 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   function loadComments(noteId) {
-    fetch(`https://coursenotes.ortchimaru1.repl.co/comment.php?note_id=${noteId}`)
+    fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/comment.php?note_id=${noteId}`)
+
       .then(res => res.json())
       .then(comments => {
         const container = document.getElementById("commentsList");
@@ -56,7 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = document.getElementById("commentContent").value.trim();
     if (content === "") return;
 
-    fetch("https://coursenotes.ortchimaru1.repl.co/comment.php", {
+    fetch("https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/comment.php", {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json"

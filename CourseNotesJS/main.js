@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const course = courseFilter.value;
     const sort = sortOption.value;
 
-    let url = `https://coursenotes.ortchimaru1.repl.co/notes.php?page=${currentPage}&limit=${limit}`;
+    let url = `https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/notes.php?page=${currentPage}&limit=${limit}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (course) url += `&course=${encodeURIComponent(course)}`;
     if (sort) url += `&sort=${encodeURIComponent(sort)}`;
