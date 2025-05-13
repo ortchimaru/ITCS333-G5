@@ -75,4 +75,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   });
+  
+  document.getElementById("deleteBtn").addEventListener("click", () => {
+    if (!confirm("Are you sure you want to delete this note?")) return;
+  
+    fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/notes.php?id=${id}`, {
+      method: "DELETE"
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          alert("🗑️ Note deleted");
+          window.location.href = "Main Page.html";
+        } else {
+          alert("❌ Failed to delete note.");
+        }
+      })
+      .catch(err => {
+        console.error("Delete error:", err);
+        alert("❌ Request failed. Check console.");
+      });
+  });
+  
 });
