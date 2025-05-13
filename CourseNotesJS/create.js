@@ -51,7 +51,7 @@ document.getElementById("noteForm").addEventListener("submit", function(event) {
       };
     
       // Send POST request to your backend
-        fetch("../CourseNotesPHP/notes.php", {
+       fetch("https://coursenotes.ortchimaru1.repl.co/notes.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

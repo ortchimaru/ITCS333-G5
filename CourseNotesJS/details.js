@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  fetch(`../CourseNotesPHP/get-note.php?id=${id}`)
+  fetch(`https://coursenotes.ortchimaru1.repl.co/get-note.php?id=${id}`)
     .then(res => res.json())
     .then(note => {
       if (note.error) {
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   function loadComments(noteId) {
-    fetch(`../CourseNotesPHP/comment.php?note_id=${noteId}`)
+    fetch(`https://coursenotes.ortchimaru1.repl.co/comment.php?note_id=${noteId}`)
       .then(res => res.json())
       .then(comments => {
         const container = document.getElementById("commentsList");
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = document.getElementById("commentContent").value.trim();
     if (content === "") return;
 
-    fetch("../CourseNotesPHP/comment.php", {
+    fetch("https://coursenotes.ortchimaru1.repl.co/comment.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
