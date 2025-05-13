@@ -1,47 +1,58 @@
-// Attach a submit event listener to the form with ID "noteForm"
-document.getElementById("noteForm").addEventListener("submit", function(event) {
-  // Prevent the default form submission behavior (page reload)
-  event.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const editId = params.get("id");
 
-  // Get the values entered by the user, trimming whitespace for title and description
-  const title = document.getElementById("title").value.trim();
-  const course = document.getElementById("course").value;
-  const description = document.getElementById("description").value.trim();
-
-  // Clear previous error messages before validating again
-  document.getElementById("titleError").textContent = "";
-  document.getElementById("courseError").textContent = "";
-  document.getElementById("descriptionError").textContent = "";
-
-  // Assume form is valid at the start
-  let valid = true;
-
-  // Validate title input — show error if empty
-  if (title === "") {
-    document.getElementById("titleError").textContent = "Title is required.";
-    valid = false;
+  // If in edit mode, prefill the form
+  if (editId) {
+    fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/get-note.php?id=${editId}`)
+      .then(res => res.json())
+      .then(note => {
+        if (note.error) {
+          alert("❌ Failed to load note for editing.");
+          return;
+        }
+        document.getElementById("title").value = note.title;
+        document.getElementById("course").value = note.course;
+        document.getElementById("description").value = note.description;
+        // File input not prefilled by design
+      });
   }
 
-  // Validate course selection — show error if no course is selected
-  if (course === "") {
-    document.getElementById("courseError").textContent = "Please select a course.";
-    valid = false;
-  }
+  // Attach submit listener
+  document.getElementById("noteForm").addEventListener("submit", function(event) {
+    event.preventDefault();
 
-  // Validate description input — show error if empty
-  if (description === "") {
-    document.getElementById("descriptionError").textContent = "Description is required.";
-    valid = false;
-  }
+    const title = document.getElementById("title").value.trim();
+    const course = document.getElementById("course").value;
+    const description = document.getElementById("description").value.trim();
 
-  // If all fields are valid, show a success alert (simulation only — no data submission happens)
-  if (valid) {
-      // Optional file input
+    // Clear previous errors
+    document.getElementById("titleError").textContent = "";
+    document.getElementById("courseError").textContent = "";
+    document.getElementById("descriptionError").textContent = "";
+
+    let valid = true;
+
+    if (title === "") {
+      document.getElementById("titleError").textContent = "Title is required.";
+      valid = false;
+    }
+
+    if (course === "") {
+      document.getElementById("courseError").textContent = "Please select a course.";
+      valid = false;
+    }
+
+    if (description === "") {
+      document.getElementById("descriptionError").textContent = "Description is required.";
+      valid = false;
+    }
+
+    if (valid) {
       const fileInput = document.getElementById("file");
       const file_path = fileInput.files.length > 0 ? fileInput.files[0].name : null;
-      const uploader = "Anonymous"; // You can make this dynamic later
-    
-      // Prepare note data
+      const uploader = "Anonymous"; // can be dynamic later
+
       const noteData = {
         title,
         course,
@@ -49,11 +60,13 @@ document.getElementById("noteForm").addEventListener("submit", function(event) {
         uploader,
         file_path
       };
-    
-      // Send POST request to your backend
-        fetch("https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/notes.php", {
 
-        method: "POST",
+      // Determine whether to POST or PUT
+      const method = editId ? "PUT" : "POST";
+      const endpoint = `https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/notes.php${editId ? `?id=${editId}` : ""}`;
+
+      fetch(endpoint, {
+        method,
         headers: {
           "Content-Type": "application/json"
         },
@@ -62,8 +75,8 @@ document.getElementById("noteForm").addEventListener("submit", function(event) {
         .then(response => response.json())
         .then(data => {
           if (data.message) {
-            alert("✅ Note created successfully!");
-            document.getElementById("noteForm").reset();
+            alert(editId ? "✅ Note updated successfully!" : "✅ Note created successfully!");
+            window.location.href = "Main Page.html";
           } else {
             alert("❌ Error: " + data.error);
           }
@@ -73,5 +86,5 @@ document.getElementById("noteForm").addEventListener("submit", function(event) {
           console.error("Fetch error:", error);
         });
     }
-    
+  });
 });

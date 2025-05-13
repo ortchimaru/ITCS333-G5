@@ -6,8 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.innerHTML = "<p style='color:red'>❌ Missing note ID.</p>";
     return;
   }
-  
-    fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/get-note.php?id=${id}`)
+
+  // Load note details
+  fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/get-note.php?id=${id}`)
     .then(res => res.json())
     .then(note => {
       if (note.error) {
@@ -22,12 +23,19 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("noteDownloads").textContent = note.downloads;
       document.getElementById("noteFile").href = `files/${note.file_path}`;
 
+      // Edit Button dynamically
+      const editContainer = document.getElementById("editLinkContainer");
+      editContainer.innerHTML = `
+        <a href="Create Page.html?id=${note.id}" role="button" class="outline contrast" style="color: white;">
+          ✏️ Edit Note
+        </a>
+      `;      
+
       loadComments(id);
     });
 
   function loadComments(noteId) {
     fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/comment.php?note_id=${noteId}`)
-
       .then(res => res.json())
       .then(comments => {
         const container = document.getElementById("commentsList");
@@ -58,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (content === "") return;
 
     fetch("https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/comment.php", {
-
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -75,10 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   });
-  
+
+  // Handle delete note
   document.getElementById("deleteBtn").addEventListener("click", () => {
     if (!confirm("Are you sure you want to delete this note?")) return;
-  
+
     fetch(`https://f3a4bae5-c028-4757-b448-e94ff06617a5-00-3fo74n4qt75qz.pike.replit.dev/notes.php?id=${id}`, {
       method: "DELETE"
     })
@@ -96,5 +104,4 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("❌ Request failed. Check console.");
       });
   });
-  
 });
