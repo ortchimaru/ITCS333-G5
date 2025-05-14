@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campus News</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Campus News</h1>
+      <p>Stay updated with the latest campus news and announcements</p>
+    </header>
+
+    <form id="newsForm">
+      <h3>Add News</h3>
+      <label>
+        Title:
+        <input type="text" id="title" required />
+      </label>
+      <label>
+        Content:
+        <textarea id="content" required></textarea>
+      </label>
+      <label>
+        Image URL:
+        <input type="url" id="imageUrl" required />
+      </label>
+      <button type="submit">Add News</button>
+      <button type="reset" class="secondary">Cancel</button>
+    </form>
+
+    <hr />
+
+    <div class="search-sort-container">
+      <input type="search" id="searchInput" placeholder="Search news..." />
+      <select id="sortSelect">
+        <option value="recent">Sort by Recent</option>
+        <option value="title">Sort by Title</option>
+      </select>
+    </div>
+
+    <div id="newsList"></div>
+    <nav id="pagination"></nav>
+  </main>
+
+  <!-- Detail Modal (keeping for fallback) -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="modal">
+    <h3 id="modalTitle"></h3>
+    <img id="modalImage" src="" alt="" />
+    <p id="modalContent"></p>
+    <button onclick="closeModal()">Close</button>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
