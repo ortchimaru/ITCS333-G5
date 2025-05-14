@@ -1,5 +1,3 @@
-details.html
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,15 +16,11 @@ details.html
     <p><strong>File:</strong> <a id="noteFile" href="#" target="_blank">Download</a></p>
 
     <hr />
-    <nav>
-      <span id="editLinkContainer"></span>
-      <a href="Main Page.html">Back to listing</a>
-      <div style="margin-top: 1rem;">
-        <button id="deleteBtn" class="contrast outline" style="color: red; border-color: red;">
-          🗑️ Delete Note
-        </button>
-      </div>      
-    </nav>
+    <div class="grid" style="margin-top: 1.5rem; gap: 1rem;">
+      <button id="editBtn" class="contrast outline">✏️ Edit Note</button>
+      <a href="Main Page.html" class="contrast outline" style="text-align: center; margin: auto";>🔙 Back to listing</a>
+      <button id="deleteBtn" class="contrast outline" style="color: red; border-color: red;">🗑️ Delete Note</button>
+    </div>  
 
     <hr />
     <h2>Comments</h2>

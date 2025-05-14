@@ -24,12 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("noteFile").href = `files/${note.file_path}`;
 
       // Edit Button dynamically
-      const editContainer = document.getElementById("editLinkContainer");
-      editContainer.innerHTML = `
-        <a href="Create Page.html?id=${note.id}" role="button" class="outline contrast" style="color: white;">
-          ✏️ Edit Note
-        </a>
-      `;      
+      document.getElementById("editBtn").addEventListener("click", () => {
+        window.location.href = `Create Page.html?id=${id}`;
+      });
+      
 
       loadComments(id);
     });
