@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item - Campus Hub Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fa;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+        }
+
+        .form-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .form-success {
+            color: #2ecc71;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 30px;
+        }
+
+        #backToMarketButton {
+            background-color: #007bff;
+            margin-top: 15px;
+            display: inline-block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Add Item</h1>
+        <form id="addItemForm">
+            <div class="form-group">
+                <label for="title">Title*</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description*</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price*</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Author*</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="condition">Condition</label>
+                <select id="condition" name="condition">
+                    <option value="Good">Good</option>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact Information*</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Image URL</label>
+                <input type="text" id="image" name="image">
+            </div>
+            <div id="formError" class="form-error"></div>
+            <div id="formSuccess" class="form-success"></div>
+            <button type="button" id="submitButton">Add Item</button>
+        </form>
+        
+        
+        <button id="backToMarketButton" onclick="window.location.href = 'index.html';">Back to Marketplace</button>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Campus Hub Marketplace. All rights reserved.</p>
+    </div>
+
+    <script>
+        const API_URL = "https://7ae4dd05-11e6-47c4-9163-82a36b953307-00-1dzwlyjvd31r2.sisko.replit.dev/add-item.php";
+
+        document.getElementById('submitButton').addEventListener('click', async function() {
+            const errorElement = document.getElementById('formError');
+            const successElement = document.getElementById('formSuccess');
+            const backButton = document.getElementById('backToMarketButton');
+            errorElement.textContent = '';
+            successElement.textContent = '';
+            backButton.style.display = 'none'; 
+            
+            // Get form values
+            const itemData = {
+                title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                price: document.getElementById('price').value.trim(),
+                author: document.getElementById('author').value.trim(),
+                condition: document.getElementById('condition').value,
+                contact: document.getElementById('contact').value.trim(),
+                image: document.getElementById('image').value.trim()
+            };
+
+            // Validate required fields
+            if (!itemData.title || !itemData.description || !itemData.price || !itemData.author || !itemData.contact) {
+                errorElement.textContent = "Please fill in all required fields (marked with *)";
+                return;
+            }
+
+            // Validate price
+            if (isNaN(parseFloat(itemData.price))) {
+                errorElement.textContent = "Please enter a valid price";
+                return;
+            }
+            
+            itemData.price = parseFloat(itemData.price);
+            if (itemData.price <= 0) {
+                errorElement.textContent = "Please enter a price greater than 0";
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitButton = document.getElementById('submitButton');
+                submitButton.disabled = true;
+                submitButton.textContent = "Adding Item...";
+                
+                // Send data to server
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(itemData)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok || !result.success) {
+                    const errorMsg = result.error || result.message || 'Failed to add item';
+                    throw new Error(errorMsg);
+                }
+                
+                // Show success message
+                successElement.textContent = "✅ Item added successfully! Redirecting...";
+                
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('author').value = '';
+                document.getElementById('contact').value = '';
+                document.getElementById('image').value = '';
+                
+                
+                backButton.style.display = 'inline-block';
+                submitButton.disabled = false;
+                submitButton.textContent = "Add Item";
+                
+            } catch (error) {
+                console.error("Error adding item:", error);
+                errorElement.textContent = "❌ Error adding item: " + error.message;
+                
+              
+                const submitButton = document.getElementById('submitButton');
+                submitButton.disabled = false;
+                submitButton.textContent = "Add Item";
+                backButton.style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+</html>

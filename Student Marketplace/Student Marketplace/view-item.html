@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .item-details {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .item-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .comments-section {
+            margin-top: 30px;
+        }
+        .comment {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .comment-form {
+            margin-top: 20px;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .button {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .error {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">Back to Marketplace</a>
+        
+        <div id="itemDetails" class="item-details">
+            <div class="loading">Loading item details...</div>
+        </div>
+        
+        <div class="comments-section">
+            <h2>Comments</h2>
+            <div id="commentsList"></div>
+            
+            <div class="comment-form">
+                <h3>Add a Comment</h3>
+                <form id="commentForm">
+                    <textarea id="commentText" rows="4" required placeholder="Write your comment here..."></textarea>
+                    <div id="commentError" class="error"></div>
+                    <button type="submit" class="button primary">Post Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://7ae4dd05-11e6-47c4-9163-82a36b953307-00-1dzwlyjvd31r2.sisko.replit.dev/get-items.php";
+        const COMMENTS_API = "https://7ae4dd05-11e6-47c4-9163-82a36b953307-00-1dzwlyjvd31r2.sisko.replit.dev/comments.php";
+        
+        const itemId = new URLSearchParams(window.location.search).get('id');
+        
+        if (!itemId) {
+            document.getElementById('itemDetails').innerHTML = `
+                <div class="error">No item ID specified. Please go back to the marketplace and select an item.</div>
+            `;
+        } else {
+            fetchItemDetails();
+            fetchComments();
+        }
+        
+        // Fetch item details
+        async function fetchItemDetails() {
+            try {
+                const response = await fetch(`${API_URL}?cache=${Date.now()}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                
+                const responseText = await response.text();
+                const data = processResponse(responseText);
+                
+                if (!Array.isArray(data)) {
+                    throw new Error("Invalid data received from server");
+                }
+                
+                const item = data.find(i => i.id == itemId);
+                
+                if (!item) {
+                    throw new Error("Item not found");
+                }
+                
+                displayItemDetails(item);
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('itemDetails').innerHTML = `
+                    <div class="error">Error loading item: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // Display item details
+        function displayItemDetails(item) {
+            const imageUrl = item.image || 'default-image.jpg'; 
+            document.getElementById('itemDetails').innerHTML = `
+                <img class="item-image" src="${imageUrl}" alt="${item.title || 'No title'}" />
+                <h1>${item.title || 'Untitled Item'}</h1>
+                <p>${item.description || 'No description available'}</p>
+                <p><strong>Author:</strong> ${item.author || 'Unknown'}</p>
+                <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+                <p><strong>Price:</strong> $${item.price || '0.00'}</p>
+                <p><strong>Contact:</strong> ${item.contact || 'Not provided'}</p>
+            `;
+        }
+        
+        // Process server response
+        function processResponse(text) {
+            if (text.startsWith('hello[')) {
+                try {
+                    const jsonStr = text.substring(5);
+                    return JSON.parse(jsonStr);
+                } catch (e) {
+                    throw new Error("Failed to parse server response");
+                }
+            }
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error("Invalid server response format");
+            }
+        }
+        
+        
+        async function fetchComments() {
+            try {
+                const response = await fetch(`${COMMENTS_API}?item_id=${itemId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                
+                const comments = await response.json();
+                displayComments(comments);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+                document.getElementById('commentsList').innerHTML = `
+                    <div class="error">Error loading comments: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // Display comments
+        function displayComments(comments) {
+            const commentsList = document.getElementById('commentsList');
+            
+            if (!Array.isArray(comments) || comments.length === 0) {
+                commentsList.innerHTML = "<p>No comments yet. Be the first to comment!</p>";
+                return;
+            }
+            
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <p><strong>${comment.name || 'Anonymous'}</strong> - ${new Date(comment.date).toLocaleString()}</p>
+                    <p>${comment.text}</p>
+                </div>
+            `).join('');
+        }
+        
+        // Handle comment submission
+        document.getElementById('commentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const commentText = document.getElementById('commentText').value.trim();
+            const errorElement = document.getElementById('commentError');
+            
+            if (!commentText) {
+                errorElement.textContent = "Please enter a comment";
+                return;
+            }
+            
+            errorElement.textContent = "";
+            
+            try {
+                const response = await fetch(COMMENTS_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `item_id=${itemId}&text=${encodeURIComponent(commentText)}&name=User`
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to post comment');
+                }
+                
+                document.getElementById('commentText').value = '';
+                fetchComments();
+            } catch (error) {
+                console.error("Error posting comment:", error);
+                errorElement.textContent = "Error posting comment. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html>
