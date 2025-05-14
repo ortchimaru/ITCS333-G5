@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .loading {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            text-align: center;
+            color: #6c757d;
+        }
+        .error {
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 4px;
+        }
+        #itemsList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        article {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        article img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .button {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .add-item-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Marketplace</h1>
+    <a href="add-item.html" class="add-item-link">Add New Item</a>
+    
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search items...">
+        <select id="sortSelect">
+            <option value="default">Default</option>
+            <option value="title">Sort by Title</option>
+            <option value="price">Sort by Price</option>
+        </select>
+        <button id="prevPage">Previous</button>
+        <button id="nextPage">Next</button>
+    </div>
+    
+    <div id="itemsList"></div>
+    
+    <script>
+        const API_URL = "https://7ae4dd05-11e6-47c4-9163-82a36b953307-00-1dzwlyjvd31r2.sisko.replit.dev/get-items.php";
+        const ITEMS_PER_PAGE = 4;
+
+        const getElement = (selector) => document.querySelector(selector);
+        const getURLParam = (param) => new URLSearchParams(window.location.search).get(param);
+
+        function showError(message, element) {
+            element.innerHTML = ` 
+                <div class="error">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+        }
+
+        function processResponse(text) {
+            if (text.startsWith('hello[')) {
+                try {
+                    const jsonStr = text.substring(5);
+                    return JSON.parse(jsonStr);
+                } catch (e) {
+                    throw new Error("Failed to parse server response");
+                }
+            }
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error("Invalid server response format");
+            }
+        }
+
+        
+        async function fetchItems() {
+            const itemsList = getElement("#itemsList");
+            if (!itemsList) return;
+
+            itemsList.innerHTML = "<div class='loading'>Loading items...</div>";
+
+            try {
+                const response = await fetch(`${API_URL}?cache=${Date.now()}`);
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+                const responseText = await response.text();
+                const data = processResponse(responseText);
+
+                if (!Array.isArray(data)) {
+                    throw new Error("Invalid data received from server");
+                }
+
+                window.allItems = data;
+                renderItems();
+
+            } catch (error) {
+                console.error("Fetch error:", error);
+                showError(error.message, itemsList);
+            }
+        }
+
+        function renderItems() {
+            const searchInput = getElement("#searchInput");
+            const sortSelect = getElement("#sortSelect");
+            const itemsList = getElement("#itemsList");
+            const prevPageBtn = getElement("#prevPage");
+            const nextPageBtn = getElement("#nextPage");
+
+            if (!window.allItems) return;
+
+            let filtered = window.allItems.filter(item =>
+                item.title && item.title.toLowerCase().includes(searchInput.value.toLowerCase())
+            );
+
+            if (sortSelect.value === "price") {
+                filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            } else if (sortSelect.value === "title") {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            const start = (window.currentPage - 1) * ITEMS_PER_PAGE;
+            const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+            itemsList.innerHTML = "";
+
+            if (filtered.length === 0) {
+                itemsList.innerHTML = "<div class='loading'>No items found matching your search.</div>";
+                return;
+            }
+
+            
+            const placeholderImage = "https://via.placeholder.com/200"; 
+
+            paginated.forEach(item => {
+                const article = document.createElement("article");
+                const imageUrl = item.image && item.image.trim() !== "" ? item.image : placeholderImage;
+                article.innerHTML = `
+                    <img class="item-image" src="${imageUrl}" alt="${item.title || 'No title'}" onerror="this.onerror=null;this.src='${placeholderImage}';" />
+                    <h2>${item.title || 'Untitled Item'}</h2>
+                    <p>${item.description || 'No description available'}</p>
+                    <p><strong>Author:</strong> ${item.author || 'Unknown'}</p>
+                    <p><strong>Condition:</strong> ${item.condition || 'Not specified'}</p>
+                    <strong>$${item.price || '0.00'}</strong>
+                    <a href="view-item.html?id=${item.id}" class="button primary">View Details</a>
+                `;
+                itemsList.appendChild(article);
+            });
+
+            prevPageBtn.disabled = window.currentPage === 1;
+            nextPageBtn.disabled = start + ITEMS_PER_PAGE >= filtered.length;
+        }
+
+        function setupMarketplacePage() {
+            if (!getElement("#itemsList")) return;
+
+            window.currentPage = 1;
+
+            getElement("#searchInput").addEventListener("input", () => {
+                window.currentPage = 1;
+                renderItems();
+            });
+
+            getElement("#sortSelect").addEventListener("change", () => {
+                window.currentPage = 1;
+                renderItems();
+            });
+
+            getElement("#prevPage").addEventListener("click", () => {
+                if (window.currentPage > 1) {
+                    window.currentPage--;
+                    renderItems();
+                }
+            });
+
+            getElement("#nextPage").addEventListener("click", () => {
+                window.currentPage++;
+                renderItems();
+            });
+
+            fetchItems();
+        }
+
+        setupMarketplacePage();
+    </script>
+</body>
+</html>
